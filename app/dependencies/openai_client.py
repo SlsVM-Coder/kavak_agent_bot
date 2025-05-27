@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
-print("🔑️ OPENAI_API_KEY está cargada como:", os.getenv("OPENAI_API_KEY"))
 
 
 class OpenAIClient:
