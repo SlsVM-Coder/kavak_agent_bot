@@ -97,5 +97,5 @@ class WhatsAppService:
         ]
         resp = self.ai.chat(messages, max_tokens=300, temperature=0.3)
         # Opción A: dict access para evitar warnings
-        content = resp["choices"][0]["message"]["content"]
-        return str(content).strip()
+        reply = resp.choices[0].message.content.strip()  # type: ignore
+        return reply
