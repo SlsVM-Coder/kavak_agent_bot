@@ -1,22 +1,27 @@
+from app.api.models import OutgoingMessage
 from app.services.session_manager import State
+from app.utils.constants import FAREWELL_MSG
 
 
 class FinanceConfirmHandler:
-    def handle(self, user_id: str, text: str, sessions, llm) -> str:
-        low = text.strip().lower()
-        if low in ("sí", "si", "s", "yes", "y"):
+    def handle(self, user_id: str, text: str, sessions, llm) -> OutgoingMessage:
+        opt = text.strip().upper()
+        if opt == "A":
             sessions.set_state(user_id, State.AWAITING_DOWN_PAYMENT_CHOICE)
-            return (
-                "Perfecto, dime cuánto te gustaría dar de enganche:\n"
-                "A) 10%  B) 15%  C) 20%  D) Otro porcentaje  E) Cantidad"
-            )
-        if low in ("no", "n", "nop", "nope"):
+            return OutgoingMessage(text=(
+                "¿Cuánto te gustaría dar de enganche?\n"
+                "A) 10%\n"
+                "B) 15%\n"
+                "C) 20%\n"
+                "D) Otro porcentaje\n"
+                "E) Cantidad"
+            ))
+        if opt == "B":
             sessions.clear(user_id)
-            # farewell se añade en _fallback
-            return "¡Entendido! Si necesitas algo más, aquí estamos. 😊" + sessions.clear and ""
+            return OutgoingMessage(text="¡Entendido! Si necesitas algo más, aquí estamos. 😊" + FAREWELL_MSG)
 
         prompt = (
-            f"El cliente respondió «{text}» cuando pregunté: "
-            "¿Te gustaría un plan de financiamiento para este auto? Responde Sí o No."
+            f"El cliente escribió «{text}», pero las opciones eran A) Sí o B) No. "
+            "Reformula pidiéndole A o B."
         )
-        return llm.chat_user(prompt, max_tokens=40, temperature=0.7)
+        return OutgoingMessage(text=llm.chat_user(prompt, max_tokens=40, temperature=0.7))
