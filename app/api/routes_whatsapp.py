@@ -1,22 +1,21 @@
-# app/api/routes_whatsapp.py
-
 from fastapi import APIRouter, Form, Depends, Response
 from twilio.twiml.messaging_response import MessagingResponse
-from app.dependencies.openai_client import get_openai_client, OpenAIClient
+from app.dependencies.openai_client import get_openai_client
+from app.services.session_manager import SessionManager
 from app.services.whatsapp_service import WhatsAppService
 
 router = APIRouter()
+sessions = SessionManager()
 
 
 @router.post("/")
 async def receive_message(
-    from_number: str = Form(..., alias="From"),
-    body_text:   str = Form(..., alias="Body"),
-    ai_client:   OpenAIClient = Depends(get_openai_client),
+    From: str = Form(...),
+    Body: str = Form(...),
+    ai_client=Depends(get_openai_client),
 ):
-    service = WhatsAppService(ai_client)
-    reply = service.handle_message(body_text)
-
+    service = WhatsAppService(ai_client, sessions)
+    reply = service.handle_message(From, Body)
     twiml = MessagingResponse()
     twiml.message(reply)
-    return Response(content=str(twiml), media_type="application/xml")
+    return Response(str(twiml), media_type="application/xml")
