@@ -8,7 +8,7 @@ Un chatbot de WhatsApp para Kavak que simula el comportamiento de un agente come
 
 Toda la arquitectura, prompts, guía de instalación y roadmap están disponibles aquí:
 
-**▶️ [Ver documentación completa](https://kavak-docs-lr08mk5tn-slsvmcoders-projects.vercel.app/)**  
+**▶️ [Ver documentación completa](https://kavak-docs-ow5lieue9-slsvmcoders-projects.vercel.app)**  
 
 ---
 
