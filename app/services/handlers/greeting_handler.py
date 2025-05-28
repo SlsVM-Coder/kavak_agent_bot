@@ -1,16 +1,21 @@
+from app.api.models import OutgoingMessage
 from app.services.session_manager import State
-from app.llm.prompt_templates import SYSTEM_PROMPT
 
 
 class GreetingHandler:
-    def handle(self, user_id: str, text: str, sessions, llm) -> str:
+    def handle(self, user_id: str, text: str, sessions, llm) -> OutgoingMessage:
         prompt = (
-            "Eres un agente comercial de Kavak, amigable y cercano. "
-            "Saluda al cliente y ofrécele:\n"
-            "A) Ayuda a encontrar tu próximo auto\n"
-            "B) Recomienda algunos modelos"
+            "Eres un agente comercial de Kavak, muy amable y cercano. "
+            "Saluda al cliente, preséntate brevemente y diles que estás aquí para ayudar."
         )
-        reply = llm.chat_user(prompt, max_tokens=80, temperature=0.7)
+        greeting = llm.chat_user(prompt, max_tokens=80, temperature=0.7)
+
+        body = (
+            f"{greeting}\n\n"
+            "A) Buscar auto\n"
+            "B) Recomendar modelos"
+        )
+
         sessions.start(user_id)
         sessions.set_state(user_id, State.AWAITING_OPTION)
-        return reply
+        return OutgoingMessage(text=body)
